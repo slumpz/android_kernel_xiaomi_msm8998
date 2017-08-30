@@ -6613,7 +6613,7 @@ static int wake_cap(struct task_struct *p, int cpu, int prev_cpu)
 static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu, int sync)
 {
 	struct sched_domain *sd;
-	int target_cpu = prev_cpu, tmp_target, tmp_backup;
+	int target_cpu = prev_cpu, tmp_target;
 	bool boosted, prefer_idle;
 
 	schedstat_inc(p, se.statistics.nr_wakeups_secb_attempts);
@@ -6677,18 +6677,10 @@ static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu, int sync
 		}
 
 		if (energy_diff(&eenv) >= 0) {
-			/* No energy saving for target_cpu, try backup */
-			target_cpu = tmp_backup;
-			eenv.dst_cpu = target_cpu;
-			eenv.trg_cpu = target_cpu;
-			if (tmp_backup < 0 ||
-			    tmp_backup == prev_cpu ||
-			    energy_diff(&eenv) >= 0) {
-				schedstat_inc(p, se.statistics.nr_wakeups_secb_no_nrg_sav);
-				schedstat_inc(this_rq(), eas_stats.secb_no_nrg_sav);
-				target_cpu = prev_cpu;
-				goto unlock;
-			}
+			schedstat_inc(p, se.statistics.nr_wakeups_secb_no_nrg_sav);
+			schedstat_inc(this_rq(), eas_stats.secb_no_nrg_sav);
+			target_cpu = prev_cpu;
+			goto unlock;
 		}
 
 		schedstat_inc(p, se.statistics.nr_wakeups_secb_nrg_sav);
