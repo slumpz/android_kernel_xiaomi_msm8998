@@ -6419,9 +6419,7 @@ done:
 
 /*
  * cpu_util_wake: Compute cpu utilization with any contributions from
- * the waking task p removed.  check_for_migration() looks for a better CPU of
- * rq->curr. For that case we should return cpu util with contributions from
- * currently running task p removed.
+ * the waking task p removed.
  */
 static int cpu_util_wake(int cpu, struct task_struct *p)
 {
@@ -6434,8 +6432,7 @@ static int cpu_util_wake(int cpu, struct task_struct *p)
 	 * utilization from cpu utilization. Instead just use
 	 * cpu_util for this case.
 	 */
-	if (!walt_disabled && sysctl_sched_use_walt_cpu_util &&
-	    p->state == TASK_WAKING)
+	if (!walt_disabled && sysctl_sched_use_walt_cpu_util)
 		return cpu_util(cpu);
 #endif
 	/* Task has no contribution or is new */
